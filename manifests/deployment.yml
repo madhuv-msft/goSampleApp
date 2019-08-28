@@ -1,0 +1,16 @@
+apiVersion : apps/v1beta1
+kind: Deployment
+metadata:
+  name: madhuvmsftgosampleappvithati2 
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: madhuvmsftgosampleappvithati2 
+    spec:
+      containers:
+        - name: madhuvmsftgosampleappvithati2 
+          image: desattiracr.azurecr.io/madhuvmsftgosampleappvithati2 
+          ports:
+          - containerPort: 80
