@@ -4,12 +4,12 @@ resources:
 variables:
 
   # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: '0941fe66-9cf4-4bef-ac6d-3e767ab2c9aa'
+  dockerRegistryServiceConnection: 'b1fc85ac-b6e6-408c-bfa1-6cb80da40f5a'
   imageRepository: 'madhuvmsftgosampleappnullcheck1'
   containerRegistry: 'desattiracr.azurecr.io'
   dockerfilePath: '**/Dockerfile'
   tag: '$(Build.BuildId)'
-  imagePullSecret: 'desattiracr9f15-auth'
+  imagePullSecret: 'desattiracr9f16-auth'
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
@@ -35,35 +35,3 @@ stages:
           
     - upload: manifests
       artifact: manifests
-
-- stage: Deploy
-  displayName: Deploy stage
-  dependsOn: Build
-  jobs:
-  - deployment: Deploy
-    displayName: Deploy
-    pool:
-      vmImage: $(vmImageName)
-    environment: 'madhuvmsftgoSampleApp.nullcheck1'
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - task: KubernetesManifest@0
-            displayName: Create imagePullSecret
-            inputs:
-              action: createSecret
-              secretName: $(imagePullSecret)
-              dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
-              
-          - task: KubernetesManifest@0
-            displayName: Deploy to Kubernetes cluster
-            inputs:
-              action: deploy
-              manifests: |
-                $(Pipeline.Workspace)/manifests/deployment.yml
-                $(Pipeline.Workspace)/manifests/service.yml
-              imagePullSecrets: |
-                $(imagePullSecret)
-              containers: |
-                $(containerRegistry)/$(imageRepository):$(tag)
